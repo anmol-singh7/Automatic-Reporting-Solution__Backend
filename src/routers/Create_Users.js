@@ -26,7 +26,7 @@ const { getConnection } = require('../db/connection');
 router.get('/users', async (req, res) => {
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query('SELECT * FROM Create_Users');
+        const [rows] = await connection.query('SELECT * FROM Create_Users2');
         connection.release();
         res.json(rows);
     } catch (error) {
@@ -36,16 +36,16 @@ router.get('/users', async (req, res) => {
 });
 
 router.post('/addusers', async (req, res) => {
-    const { user_id, user_name, employ_id, department, email, password, phone_number } = req.body;
+    const { user_id, user_name, employ_id,designation, department, email, password, phone_number } = req.body;
 
     try {
         const connection = await getConnection();
-        if (!user_id || !user_name || !employ_id || !department || !email || !password || !phone_number) {
+        if (!user_id || !user_name || !employ_id ||!designation|| !department || !email || !password || !phone_number) {
             return res.status(400).json({ message: 'Invalid request' });
         }
         const result = await connection.query(
-            'INSERT INTO Create_Users (User_Id, User_Name, Employ_Id, Department, Email, Password, Phone_Number) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [user_id, user_name, employ_id, department, email, password, phone_number]
+            'INSERT INTO Create_Users2 (User_Id, User_Name, Employ_Id, Designation, Department, Email, Password, Phone_Number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [user_id, user_name, employ_id, designation, department, email, password, phone_number]
         );
         connection.release();
         res.json({ message: 'User added successfully' });
