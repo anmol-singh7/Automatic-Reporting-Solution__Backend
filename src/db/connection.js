@@ -3,17 +3,20 @@ const dotenv = require("dotenv")
 dotenv.config({ path: "../../.env" });
 const mysql = require('mysql2/promise');
 
-const HOST=process.env.HOST;
-const DATABASE = process.env.DATABASE_NAME;
-const PASSWORD =process.env.PASSWORD;
-const USER = process.env.USER_NAME;
+// const HOST=process.env.HOST;
+// const DATABASE = process.env.DATABASE_NAME;
+// const PASSWORD =process.env.PASSWORD;
+// const USER = process.env.USER_NAME;
 
-
+// DATABASE_NAME = "sql7600204"
+// USER_NAME = "sql7600204"
+// HOST = "sql7.freesqldatabase.com"
+// PASSWORD = "PfsXpTIhKK"
 const pool = mysql.createPool({
-    host:HOST,
-    user: USER,
-    password: PASSWORD,
-    database: DATABASE,
+    host: "sql7.freesqldatabase.com",
+    user: "sql7600204",
+    password: "PfsXpTIhKK",
+    database: "sql7600204",
     // port: 3306,
     waitForConnections: true,
     connectionLimit: 10,
