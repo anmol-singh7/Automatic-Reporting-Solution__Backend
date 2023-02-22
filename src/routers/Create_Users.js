@@ -26,7 +26,7 @@ const { getConnection } = require('../db/connection');
 router.get('/users', async (req, res) => {
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query('SELECT * FROM Create_Users2');
+        const [rows] = await connection.query('SELECT * FROM Create_Users');
         connection.release();
         res.json(rows);
     } catch (error) {
@@ -44,7 +44,7 @@ router.post('/addusers', async (req, res) => {
             return res.status(400).json({ message: 'Invalid request' });
         }
         const result = await connection.query(
-            'INSERT INTO Create_Users2 (User_Id, User_Name, Employ_Id, Designation, Department, Email, Password, Phone_Number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO Create_Users (User_Id, User_Name, Employ_Id, Designation, Department, Email, Password, Phone_Number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [user_id, user_name, employ_id, designation, department, email, password, phone_number]
         );
         connection.release();
