@@ -55,6 +55,45 @@ router.post('/addusers', async (req, res) => {
     }
 });
 
+router.get('/forms',async (req,res)=>{
+    try {
+        const connection = await getConnection();
+        const [Form_rows] = await connection.query('SELECT * FROM Form_Types');
+        connection.release();
+        res.json(Form_rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+
+router.post('/addforms', async (req, res) => {
+    const { Form_Type } = req.body;
+    console.log(req.body)
+
+    try {
+        const connection = await getConnection();
+        if (!Form_Type) {
+            return res.status(400).json({ message: 'Invalid request' });
+        }
+        const result = await connection.query(
+            'INSERT INTO  Form_Types(Form_Types) VALUES (?)',
+            [Form_Type]
+        );
+        connection.release();
+        res.json({ message: 'Form added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+
+
+
 module.exports = router;
 
 
