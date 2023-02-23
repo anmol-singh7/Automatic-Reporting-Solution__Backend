@@ -90,6 +90,18 @@ router.post('/addforms', async (req, res) => {
     }
 });
 
+router.get('/pwd_auto/columns', async (req, res) => {
+    try {
+        const connection = await getConnection();
+        const [rows] = await connection.query('DESCRIBE pwd_auto');
+        connection.release();
+        const columns = rows.map(row => row.Field);
+        res.json(columns);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 
 
