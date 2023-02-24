@@ -186,6 +186,7 @@ router.get('/systems', async (req, res) => {
 
 router.post('/addsensorlist', async (req, res) => {
     const sensorList = req.body;
+    console.log(req.body);
     const numRows = await getNumRows('Sensor_List');
 
     try {
@@ -195,11 +196,11 @@ router.post('/addsensorlist', async (req, res) => {
         }
 
         const promises = sensorList.map(async (sensor, index) => {
-            const sensorName = `S${numRows + index + 1}`;
-            const { Head1, Head2, Unit, AttributeType } = sensor;
+            const sensorname = `S${numRows + index + 1}`;
+            const { head1, head2, unit, attributetype,reporttype } = sensor;
             const result = await connection.query(
-                'INSERT INTO Sensor_List (Sensor_Name, Head1, Head2, Unit, AttributeType) VALUES (?, ?, ?, ?, ?)',
-                [sensorName, Head1, Head2, Unit, AttributeType]
+                'INSERT INTO Sensor_List (sensorname, head1, head2, unit, attributetype,reporttype) VALUES (?, ?, ?, ?, ?, ?)',
+                [sensorname, head1, head2, unit, attributetype,reporttype]
             );
         });
 
