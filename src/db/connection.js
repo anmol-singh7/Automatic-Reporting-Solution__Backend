@@ -1,5 +1,5 @@
 const dotenv = require("dotenv")
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: "../.env" });
 const mysql = require('mysql2/promise');
 
 const HOST=process.env.HOST;
