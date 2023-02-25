@@ -22,6 +22,7 @@ const express = require('express');
 const router = express.Router();
 const { getConnection } = require('../db/connection');
 
+
 router.get('/users', async (req, res) => {
     try {
         const con1nection = await getConnection();
@@ -33,6 +34,7 @@ router.get('/users', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.post('/addusers', async (req, res) => {
     const { user_id, user_name, employ_id,designation, department, email, password, phone_number } = req.body;
@@ -54,6 +56,7 @@ router.post('/addusers', async (req, res) => {
     }
 });
 
+
 router.get('/forms',async (req,res)=>{
     try {
         const connection = await getConnection();
@@ -65,6 +68,7 @@ router.get('/forms',async (req,res)=>{
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.post('/addforms', async (req, res) => {
     const { Form_Type } = req.body;
@@ -87,6 +91,7 @@ router.post('/addforms', async (req, res) => {
     }
 });
 
+
 router.get('/pwd_auto/columns', async (req, res) => {
     try {
         const connection = await getConnection();
@@ -99,6 +104,7 @@ router.get('/pwd_auto/columns', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.post('/add_audit_report_prototype', async (req, res) => {
     const { Head1, Head2, Unit, AttributeType } = req.body;
@@ -116,6 +122,7 @@ router.post('/add_audit_report_prototype', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.post('/addclient', async (req, res) => {
     const { Client_Id, Client_Name, Client_logo } = req.body;
@@ -138,6 +145,7 @@ router.post('/addclient', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.get('/clients', async (req, res) => {
     try {
@@ -170,6 +178,7 @@ router.post('/addsystems', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.get('/systems', async (req, res) => {
     try {
@@ -212,7 +221,6 @@ router.post('/addsensorlist', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
 async function getNumRows(tableName) {
     try {
         const connection = await getConnection();
@@ -238,6 +246,105 @@ router.get('/sensorlist', async (req, res) => {
     }
 });
 
+router.post('/description', async (req, res) => {
+    const {
+        userid,
+        clientid,
+        reporttype,
+        system,
+        manufacturer,
+        datebegin,
+        timebegin,
+        dateend,
+        timeend,
+        status,
+        timetype,
+        reportid,
+    } = req.body;
+
+    try {
+        const connection = await getConnection();
+        if (
+            !userid ||
+            !clientid ||
+            !reporttype ||
+            !system ||
+            !manufacturer ||
+            !datebegin ||
+            !timebegin ||
+            !dateend ||
+            !timeend ||
+            !status ||
+            !timetype ||
+            !reportid
+        ) {
+            return res.status(400).json({ message: 'Invalid request' });
+        }
+
+        // Get the current number of rows in the table
+        const [row] = await connection.query('SELECT COUNT(*) AS count FROM descriptiontable');
+
+        // Generate the Sensor_Name for the new row based on the current number of rows
+        const sensorName = `S${row[0].count + 1}`;
+
+        const result = await connection.query(
+            'INSERT INTO descriptiontable (userid, clientid, reporttype, system, manufacturer, datebegin, timebegin, dateend, timeend, status, timetype, reportid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                userid,
+                clientid,
+                reporttype,
+                system,
+                manufacturer,
+                datebegin,
+                timebegin,
+                dateend,
+                timeend,
+                status,
+                timetype,
+                reportid,
+            ]
+        );
+        connection.release();
+        res.json({ message: 'New row added successfully', sensorName });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+router.get('/sensors/:reportid', async (req, res) => {
+    const reportId = req.params.reportid;
+
+    try {
+        const connection = await getConnection();
+
+        // Get form type corresponding to report id
+        const [reportTypeRows] = await connection.query(
+            'SELECT reporttype FROM descriptiontable WHERE reportid = ?',
+            [reportId]
+        );
+
+        // Extract form type from result set
+        const reportType = reportTypeRows[0].reporttype;
+
+        // Get rows from Sensor_List table having form type
+        const [sensorListRows] = await connection.query(
+            'SELECT * FROM Sensor_List WHERE reporttype = ?',
+            [reportType]
+        );
+
+        connection.release();
+        res.json(sensorListRows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+module.exports = router;
+
+
+
 
 
 
@@ -256,8 +363,6 @@ router.get('/sensorlist', async (req, res) => {
 // });
 // });
 
-
-module.exports = router;
 
 
 // const express = require('express');
