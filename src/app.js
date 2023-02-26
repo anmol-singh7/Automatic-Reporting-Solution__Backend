@@ -4,11 +4,12 @@ const express = require("express");
 const cors =require('cors')
 const bodyParser = require("body-parser");
 require("./db/connection");
+PORT =process.env.PORT || 3000;
 
 const Create_User_Router = require("./routers/Create_Users");
 
 const app = express();
-const PORT = 3000;
+
 app.use(bodyParser.urlencoded({ extended: true, parameterLimit: 100000, limit: "50mb" }));
 // app.use(bodyParser.json())
 app.use(express.json({ limit: '50mb' }));
