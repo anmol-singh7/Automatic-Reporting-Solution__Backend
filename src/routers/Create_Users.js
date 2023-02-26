@@ -106,22 +106,22 @@ router.get('/pwd_auto/columns', async (req, res) => {
 });
 
 
-// router.post('/add_audit_report_prototype', async (req, res) => {
-//     const { Head1, Head2, Unit, AttributeType } = req.body;
-//  console.log(req.body)
-//     try {
-//         const connection = await getConnection();
-//         const result = await connection.query(
-//             'INSERT INTO audit_report_prototype (Head1, Head2, Unit, AttributeType) VALUES (?, ?, ?, ?)',
-//             [ Head1, Head2, Unit, AttributeType]
-//         );
-//         connection.release();
-//         res.json({ message: 'Audit report prototype added successfully' });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
+router.post('/add_audit_report_prototype', async (req, res) => {
+    const { Head1, Head2, Unit, AttributeType } = req.body;
+ console.log(req.body)
+    try {
+        const connection = await getConnection();
+        const result = await connection.query(
+            'INSERT INTO audit_report_prototype (Head1, Head2, Unit, AttributeType) VALUES (?, ?, ?, ?)',
+            [ Head1, Head2, Unit, AttributeType]
+        );
+        connection.release();
+        res.json({ message: 'Audit report prototype added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 
 router.post('/addclient', async (req, res) => {
