@@ -56,7 +56,6 @@ router.post('/addusers', async (req, res) => {
     }
 });
 
-
 // router.get('/forms',async (req,res)=>{
 //     try {
 //         const connection = await getConnection();
@@ -105,7 +104,6 @@ router.get('/pwd_auto/columns', async (req, res) => {
     }
 });
 
-
 router.post('/add_audit_report_prototype', async (req, res) => {
     const { Head1, Head2, Unit, AttributeType } = req.body;
  console.log(req.body)
@@ -122,7 +120,6 @@ router.post('/add_audit_report_prototype', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
 
 router.post('/addclient', async (req, res) => {
     const { Client_Id, Client_Name, Client_logo } = req.body;
@@ -192,7 +189,6 @@ router.get('/systems', async (req, res) => {
     }
 });
 
-
 router.post('/addsensorlist', async (req, res) => {
     const sensorList = req.body;
     console.log(req.body);
@@ -245,7 +241,6 @@ router.get('/sensorlist', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
 
 // router.post('/description', async (req, res) => {
 //     const {
@@ -382,9 +377,8 @@ router.post('/description', async (req, res) => {
     }
 });
 
-
-router.get('/sensors/:reportid', async (req, res) => {
-    const reportId = req.params.reportid;
+router.get('/sensors/reportid', async (req, res) => {
+    const reportId = req.body.reportid;
 
     try {
         const connection = await getConnection();
@@ -412,6 +406,24 @@ router.get('/sensors/:reportid', async (req, res) => {
     }
 });
 
+
+router.get('/sensors/reporttype', async (req, res) => {
+    const reporttype = req.body.reporttype;
+
+    try {
+        const connection = await getConnection();
+        const [sensorListRows] = await connection.query(
+            'SELECT * FROM Sensor_List WHERE reporttype = ?',
+            [reporttype]
+        );
+
+        connection.release();
+        res.json(sensorListRows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 
 router.post('/normalpoints', async (req, res) => {
@@ -477,7 +489,6 @@ router.post('/setpoints', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
 
 
 
