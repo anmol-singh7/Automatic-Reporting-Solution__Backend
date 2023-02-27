@@ -3,12 +3,21 @@ dotenv.config({ path: "../.env" });
 const express = require("express");
 const cors =require('cors')
 const bodyParser = require("body-parser");
+const { createProxyMiddleware } = require('http-proxy-middleware');
 require("./db/connection");
 PORT =process.env.PORT || 3000;
 
 const Create_User_Router = require("./routers/Create_Users");
 
 const app = express();
+
+app.use('/api',
+        createProxyMiddleware({
+            target: 'https://create-users.onrender.com',
+            changeOrigin: true,
+        })
+    );
+
 
 app.use(bodyParser.urlencoded({ extended: true, parameterLimit: 100000, limit: "50mb" }));
 // app.use(bodyParser.json())
