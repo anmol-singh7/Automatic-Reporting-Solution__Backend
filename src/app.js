@@ -26,7 +26,10 @@ app.use(cors())
 // app.use(express.urlencoded({ limit: '50mb' }));
 // app.use(express.json());   //<-- use to read req.body withot it give undefined
 app.use('/api',Create_User_Router);
-
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
 
 
 app.listen(PORT, () => {
