@@ -11,12 +11,12 @@ const Create_User_Router = require("./routers/Create_Users");
 
 const app = express();
 
-app.use('/api',
-        createProxyMiddleware({
-            target: 'https://create-users.onrender.com',
-            changeOrigin: true,
-        })
-    );
+// app.use('/api',
+//         createProxyMiddleware({
+//             target: 'https://create-users.onrender.com',
+//             changeOrigin: true,
+//         })
+//     );
 
 
 app.use(bodyParser.urlencoded({ extended: true, parameterLimit: 100000, limit: "50mb" }));
