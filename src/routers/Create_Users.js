@@ -246,6 +246,73 @@ router.get('/sensorlist', async (req, res) => {
     }
 });
 
+
+// router.post('/description', async (req, res) => {
+//     const {
+//         userid,
+//         clientid,
+//         reporttype,
+//         systems,
+//         manufacturer,
+//         datebegin,
+//         timebegin,
+//         dateend,
+//         timeend,
+//         status,
+//         timetype,
+//         reportid,
+//     } = req.body;
+
+//     try {
+//         const connection = await getConnection();
+//         if (
+//             !userid ||
+//             !clientid ||
+//             !reporttype ||
+//             !systems ||
+//             !manufacturer ||
+//             !datebegin ||
+//             !timebegin ||
+//             !dateend ||
+//             !timeend ||
+//             !status ||
+//             !timetype ||
+//             !reportid
+//         ) {
+//             return res.status(400).json({ message: 'Invalid request' });
+//         }
+
+//         // Get the current number of rows in the table
+//         const [row] = await connection.query('SELECT COUNT(*) AS count FROM descriptiontable');
+
+//         // Generate the Sensor_Name for the new row based on the current number of rows
+//         const sensorName = `S${row[0].count + 1}`;
+
+//         const result = await connection.query(
+//             'INSERT INTO descriptiontable (userid, clientid, reporttype, systems, manufacturer, datebegin, timebegin, dateend, timeend, status, timetype, reportid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+//             [
+//                 userid,
+//                 clientid,
+//                 reporttype,
+//                 systems,
+//                 manufacturer,
+//                 datebegin,
+//                 timebegin,
+//                 dateend,
+//                 timeend,
+//                 status,
+//                 timetype,
+//                 reportid,
+//             ]
+//         );
+//         connection.release();
+//         res.json({ message: 'New row added successfully', sensorName });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
 router.post('/description', async (req, res) => {
     const {
         userid,
@@ -259,7 +326,6 @@ router.post('/description', async (req, res) => {
         timeend,
         status,
         timetype,
-        reportid,
     } = req.body;
 
     try {
@@ -275,17 +341,21 @@ router.post('/description', async (req, res) => {
             !dateend ||
             !timeend ||
             !status ||
-            !timetype ||
-            !reportid
+            !timetype
         ) {
             return res.status(400).json({ message: 'Invalid request' });
         }
 
-        // Get the current number of rows in the table
-        const [row] = await connection.query('SELECT COUNT(*) AS count FROM descriptiontable');
+        // Generate the codegeneratedVianumberrep
+        const [countResult] = await connection.query(
+            'SELECT COUNT(*) AS count FROM descriptiontable WHERE datebegin = ?',
+            [datebegin]
+        );
+        const count = countResult[0].count + 1;
+        const codegeneratedVianumberrep = count.toString().padStart(6, '0');
 
-        // Generate the Sensor_Name for the new row based on the current number of rows
-        const sensorName = `S${row[0].count + 1}`;
+        // Generate the report ID
+        const reportid = `${datebegin}${timebegin}${clientid}${userid}${codegeneratedVianumberrep}V_1`;
 
         const result = await connection.query(
             'INSERT INTO descriptiontable (userid, clientid, reporttype, systems, manufacturer, datebegin, timebegin, dateend, timeend, status, timetype, reportid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -305,12 +375,13 @@ router.post('/description', async (req, res) => {
             ]
         );
         connection.release();
-        res.json({ message: 'New row added successfully', sensorName });
+        res.json({ message: 'New row added successfully', reportid });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 router.get('/sensors/:reportid', async (req, res) => {
     const reportId = req.params.reportid;
@@ -340,6 +411,75 @@ router.get('/sensors/:reportid', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
+
+
+router.post('/normalpoints', async (req, res) => {
+    const data = req.body;
+
+    try {
+        const connection = await getConnection();
+
+        if (!Array.isArray(data)) {
+            return res.status(400).json({ message: 'Invalid request' });
+        }
+
+        const values = data.map((item) => [item.reportid, item.sensorname]);
+
+        const result = await connection.query(
+            'INSERT INTO `Normal_Points` (reportid, sensorname) VALUES ?',
+            [values]
+        );
+
+        connection.release();
+        res.json({ message: 'New rows added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+// router.get('/setpoints', async (req, res) => {
+//     const { reportid } = req.body;
+//     try {
+//         const connection = await getConnection();
+//         const [result] = await connection.query(
+//             'SELECT data FROM Set_Points WHERE reportid = ?',
+//             [reportid]
+//         );
+//         connection.release();
+//         if (!result.length) {
+//             return res.status(404).json({ message: 'No data found for this reportid' });
+//         }
+//         res.json(result[0].data) ;
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
+router.post('/setpoints', async (req, res) => {
+    const data = req.body;
+
+    try {
+        const connection = await getConnection();
+        const values = data.map(item => `('${item.reportid}', '${item.sensorname}')`).join(',');
+
+        const result = await connection.query(
+            `INSERT INTO Set_Points (reportid, sensorname) VALUES ${values}`
+        );
+
+        connection.release();
+        res.json({ message: 'New data added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+
 
 module.exports = router;
 
