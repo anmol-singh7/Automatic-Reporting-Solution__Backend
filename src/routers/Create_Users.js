@@ -1043,6 +1043,25 @@ router.post('/setpoints', async (req, res) => {
     }
 });
 
+router.post('/pwd_auto/search', async (req, res) => {
+    const { datebegin, dateend } = req.body;
+
+    try {
+        const connection = await getConnection();
+        const [rows] = await connection.query(
+            'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? ORDER BY CurDT ASC',
+            [datebegin, dateend]
+        );
+        connection.release();
+
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
 
 
 module.exports = router;
