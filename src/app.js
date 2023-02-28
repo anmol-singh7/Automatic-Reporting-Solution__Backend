@@ -112,7 +112,7 @@ dotenv.config({ path: "../.env" });
 const express = require("express");
 const cors = require('cors');
 const bodyParser = require("body-parser");
-const { createProxyMiddleware } = require('http-proxy-middleware');
+// const { createProxyMiddleware } = require('http-proxy-middleware');
 require("./db/connection");
 PORT = process.env.PORT || 3000;
 
