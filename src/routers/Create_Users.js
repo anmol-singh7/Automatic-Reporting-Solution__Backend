@@ -857,7 +857,6 @@ router.get('/sensorlist', async (req, res) => {
 //     }
 // });
 
-
 router.post('/description', async (req, res) => {
     const {
         userid,
@@ -1043,28 +1042,160 @@ router.post('/setpoints', async (req, res) => {
     }
 });
 
-router.get('/pwd_auto/search', async (req, res) => {
+// router.get('/pwd_auto/search', async (req, res) => {
     
-        const datebegin= "2023-01-06 10:27:11.000000";
-        const dateend   ="2023-01-06 10:40:11.000000";
+//         const datebegin= "2023-01-06 10:27:11.000000";
+//         const dateend   ="2023-01-06 10:40:11.000000";
+//         const reporttype="Aut"
 
+
+//     try {
+//         const connection = await getConnection();
+//         const [rows] = await connection.query(
+//             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? ORDER BY CurDT ASC',
+//             [datebegin, dateend]
+//         );
+//         connection.release();
+
+//         res.json(rows);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
+
+// router.get('/pwd_auto/search', async (req, res) => {
+//     const datebegin = "2023-01-06 10:27:11.000000";
+//     const dateend = "2023-01-06 10:40:11.000000";
+//     const reporttype = "Aut";
+
+//     try {
+//         const connection = await getConnection();
+//         // Get list of sensors matching reporttype from Sensor_List table
+//         const [sensorListRows] = await connection.query(
+//             'SELECT sensorname, attributetype FROM Sensor_List WHERE reporttype = ?',
+//             [reporttype]
+//         );
+//         const sensorList = sensorListRows.map(row => row.attributetype);
+//         connection.release();
+
+//         // Get data from pwd_auto table for selected sensors and time range
+//         const [pwdAutoRows] = await connection.query(
+//             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? AND sensorname IN (?) ORDER BY CurDT ASC',
+//             [datebegin, dateend, sensorList]
+//         );
+//         connection.release();
+
+//         // Remove unwanted fields from rows
+//         const rows = pwdAutoRows.map(row => {
+//             const filteredRow = {};
+//             sensorList.forEach(sensor => {
+//                 filteredRow[sensor] = row[sensor];
+//             });
+//             return filteredRow;
+//         });
+
+//         // Add attributetype to each sensor in response
+//         const sensorsWithAttributes = sensorListRows.map(row => ({
+//             sensorname: row.sensorname,
+//             attributetype: row.attributetype
+//         }));
+
+//         // Combine filtered rows and sensor attributes into response object
+//         const response = {
+//             sensors: sensorsWithAttributes,
+//             data: rows
+//         };
+
+//         res.json(response);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
+// router.get('/pwd_auto/search', async (req, res) => {
+//     const datebegin = "2023-01-06 10:27:11.000000";
+//     const dateend = "2023-01-06 10:40:11.000000";
+//     const reporttype = "Aut"
+
+//     try {
+//         const connection = await getConnection();
+
+//         // Get attribute types from Sensor_List table where reporttype=Aut
+//         const [sensorListRows] = await connection.query(
+//             'SELECT attributetype FROM Sensor_List WHERE reporttype = ?',
+//             [reporttype]
+//         );
+//         const attributeTypes = sensorListRows.map(row => row.attributetype);
+
+//         // Get rows from pwd_auto table where CurDT is between datebegin and dateend
+//         const [pwdAutoRows] = await connection.query(
+//             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? ORDER BY CurDT ASC',
+//             [datebegin, dateend]
+//         );
+
+//         // Remove any keys from each row that are not in the attributeTypes list
+//         const filteredRows = pwdAutoRows.map(row => {
+//             const filteredRow = {};
+//             Object.keys(row).forEach(key => {
+//                 if (attributeTypes.includes(key)) {
+//                     filteredRow[key] = row[key];
+//                 }
+//             });
+//             return filteredRow;
+//         });
+
+//         connection.release();
+
+//         res.json(filteredRows);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
+router.get('/pwd_auto/search', async (req, res) => {
+    const datebegin = "2023-01-06 10:27:11.000000";
+    const dateend = "2023-01-06 10:40:11.000000";
+    const reporttype = "Aut"
 
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query(
+
+        // Get attribute types from Sensor_List table where reporttype=Aut
+        const [sensorListRows] = await connection.query(
+            'SELECT attributetype FROM Sensor_List WHERE reporttype = ?',
+            [reporttype]
+        );
+        const attributeTypes = sensorListRows.map(row => row.attributetype);
+
+        // Get rows from pwd_auto table where CurDT is between datebegin and dateend
+        const [pwdAutoRows] = await connection.query(
             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? ORDER BY CurDT ASC',
             [datebegin, dateend]
         );
+
+        // Remove any keys from each row that are not in the attributeTypes list
+        const filteredRows = pwdAutoRows.map(row => {
+            const filteredRow = {};
+            Object.keys(row).forEach(key => {
+                if (attributeTypes.includes(key) || key.endsWith('CurDT') || key.endsWith('CurT')) {
+                    filteredRow[key] = row[key];
+                }
+            });
+            return filteredRow;
+        });
+
         connection.release();
 
-        res.json(rows);
+        res.json(filteredRows);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
-
 
 
 module.exports = router;
