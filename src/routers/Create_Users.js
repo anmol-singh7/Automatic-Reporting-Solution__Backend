@@ -1043,8 +1043,11 @@ router.post('/setpoints', async (req, res) => {
     }
 });
 
-router.post('/pwd_auto/search', async (req, res) => {
-    const { datebegin, dateend } = req.body;
+router.get('/pwd_auto/search', async (req, res) => {
+    
+        const datebegin= "2023-01-06 10:27:11.000000";
+        const dateend   ="2023-01-06 10:40:11.000000";
+
 
     try {
         const connection = await getConnection();
