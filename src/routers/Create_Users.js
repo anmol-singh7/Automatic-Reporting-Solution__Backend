@@ -1181,7 +1181,7 @@ router.get('/pwd_auto/search', async (req, res) => {
         const filteredRows = pwdAutoRows.map(row => {
             const filteredRow = {};
             Object.keys(row).forEach(key => {
-                if (attributeTypes.includes(key) || key.endsWith('CurDT') || key.endsWith('CurT')) {
+                if (attributeTypes.includes(key) || key.endsWith('CurDT')) {
                     filteredRow[key] = row[key];
                 }
             });
