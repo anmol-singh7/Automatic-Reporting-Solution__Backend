@@ -960,8 +960,8 @@ router.get('/sensors/reportid', async (req, res) => {
 });
 
 
-router.post('/sensors/reporttype', async (req, res) => {
-    const reporttype = req.body.reporttype;
+router.get('/sensors/reporttype', async (req, res) => {
+    const reporttype = "Aut";
 
     try {
         const connection = await getConnection();
