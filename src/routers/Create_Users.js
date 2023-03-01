@@ -959,9 +959,8 @@ router.get('/sensors/reportid', async (req, res) => {
 });
 
 
-router.get('/sensors/reporttype', async (req, res) => {
-    const reporttype = "Aut";
-
+router.post('/sensors/reporttype', async (req, res) => {
+    const reporttype = req.body.reporttype;
     try {
         const connection = await getConnection();
         const [sensorListRows] = await connection.query(
@@ -970,9 +969,11 @@ router.get('/sensors/reporttype', async (req, res) => {
         );
 
         connection.release();
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(sensorListRows);
     } catch (error) {
         console.error(error);
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(500).json({ message: 'Server Error' });
     }
 });
