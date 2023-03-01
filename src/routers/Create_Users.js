@@ -958,24 +958,24 @@ router.post('/sensors/reportid', async (req, res) => {
 });
 
 
-// router.post('/sensors/reporttype', async (req, res) => {
-//     const reporttype = req.body.reporttype;
-//     try {
-//         const connection = await getConnection();
-//         const [sensorListRows] = await connection.query(
-//             'SELECT * FROM Sensor_List WHERE reporttype = ?',
-//             [reporttype]
-//         );
+router.post('/sensors/reporttype', async (req, res) => {
+    const reporttype = req.body.reporttype;
+    try {
+        const connection = await getConnection();
+        const [sensorListRows] = await connection.query(
+            'SELECT * FROM Sensor_List WHERE reporttype = ?',
+            [reporttype]
+        );
 
-//         connection.release();
-//         res.setHeader('Access-Control-Allow-Origin', '*');
-//         res.json(sensorListRows);
-//     } catch (error) {
-//         console.error(error);
-//         res.setHeader('Access-Control-Allow-Origin', '*');
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
+        connection.release();
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.json(sensorListRows);
+    } catch (error) {
+        console.error(error);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 
 // router.post('/normalpoints', async (req, res) => {
