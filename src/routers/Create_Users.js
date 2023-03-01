@@ -584,7 +584,6 @@ router.get('/users', async (req, res) => {
     }
 });
 
-
 router.post('/addusers', async (req, res) => {
     const { user_id, user_name, employ_id, designation, department, email, password, phone_number } = req.body;
 
@@ -604,6 +603,7 @@ router.post('/addusers', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 
 // router.get('/forms',async (req,res)=>{
 //     try {
@@ -724,7 +724,6 @@ router.post('/addsystems', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
 
 router.get('/systems', async (req, res) => {
     try {
@@ -929,7 +928,7 @@ router.post('/description', async (req, res) => {
     }
 });
 
-router.get('/sensors/reportid', async (req, res) => {
+router.post('/sensors/reportid', async (req, res) => {
     const reportId = req.body.reportid;
 
     try {
@@ -959,50 +958,50 @@ router.get('/sensors/reportid', async (req, res) => {
 });
 
 
-router.post('/sensors/reporttype', async (req, res) => {
-    const reporttype = req.body.reporttype;
-    try {
-        const connection = await getConnection();
-        const [sensorListRows] = await connection.query(
-            'SELECT * FROM Sensor_List WHERE reporttype = ?',
-            [reporttype]
-        );
+// router.post('/sensors/reporttype', async (req, res) => {
+//     const reporttype = req.body.reporttype;
+//     try {
+//         const connection = await getConnection();
+//         const [sensorListRows] = await connection.query(
+//             'SELECT * FROM Sensor_List WHERE reporttype = ?',
+//             [reporttype]
+//         );
 
-        connection.release();
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json(sensorListRows);
-    } catch (error) {
-        console.error(error);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
+//         connection.release();
+//         res.setHeader('Access-Control-Allow-Origin', '*');
+//         res.json(sensorListRows);
+//     } catch (error) {
+//         console.error(error);
+//         res.setHeader('Access-Control-Allow-Origin', '*');
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
 
 
-router.post('/normalpoints', async (req, res) => {
-    const data = req.body;
+// router.post('/normalpoints', async (req, res) => {
+//     const data = req.body;
 
-    try {
-        const connection = await getConnection();
+//     try {
+//         const connection = await getConnection();
 
-        if (!Array.isArray(data)) {
-            return res.status(400).json({ message: 'Invalid request' });
-        }
+//         if (!Array.isArray(data)) {
+//             return res.status(400).json({ message: 'Invalid request' });
+//         }
 
-        const values = data.map((item) => [item.reportid, item.sensorname]);
+//         const values = data.map((item) => [item.reportid, item.sensorname]);
 
-        const result = await connection.query(
-            'INSERT INTO `Normal_Points` (reportid, sensorname) VALUES ?',
-            [values]
-        );
+//         const result = await connection.query(
+//             'INSERT INTO `Normal_Points` (reportid, sensorname) VALUES ?',
+//             [values]
+//         );
 
-        connection.release();
-        res.json({ message: 'New rows added successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
+//         connection.release();
+//         res.json({ message: 'New rows added successfully' });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
 
 
 // router.get('/setpoints', async (req, res) => {
@@ -1025,20 +1024,49 @@ router.post('/normalpoints', async (req, res) => {
 // });
 
 router.post('/setpoints', async (req, res) => {
-    const data = req.body;
-
     try {
         const connection = await getConnection();
-        const values = data.map(item => `('${item.reportid}', '${item.sensorname}')`).join(',');
 
-        const result = await connection.query(
-            `INSERT INTO Set_Points (reportid, sensorname) VALUES ${values}`
-        );
+        const sensorData = req.body; // Expect an array of JSON objects in the request body
+        const insertPromises = sensorData.map(async (data) => {
+            // Check if this report ID and sensor name already exist in the Set_Points table
+            const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
+            if (rows.length === 0) {
+                // Insert a new row into the Set_Points table
+                await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
+            }
+        });
 
         connection.release();
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.json({ message: 'New data added successfully' });
     } catch (error) {
         console.error(error);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+router.post('/normalpoints', async (req, res) => {
+    try {
+        const connection = await getConnection();
+
+        const sensorData = req.body; // Expect an array of JSON objects in the request body
+        const insertPromises = sensorData.map(async (data) => {
+            // Check if this report ID and sensor name already exist in the Set_Points table
+            const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
+            if (rows.length === 0) {
+                // Insert a new row into the Set_Points table
+                await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
+            }
+        });
+
+        connection.release();
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.json({ message: 'New data added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(500).json({ message: 'Server Error' });
     }
 });
