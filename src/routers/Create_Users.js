@@ -659,10 +659,11 @@ router.get('/pwd_auto/search', async (req, res) => {
 });
 
 router.post('/advancesearch', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     const reportid = req.body.reportid;
     const TABLE_TO_USE=req.body.table;
-
     try {
+        res.setHeader('Access-Control-Allow-Origin', '*');
         const connection = await getConnection();
 
         // Get datebegin, dateend, and reporttype from Description table
@@ -721,6 +722,7 @@ router.post('/advancesearch', async (req, res) => {
                     filteredRow[key] = row[key];
                 }
             });
+            res.setHeader('Access-Control-Allow-Origin', '*');
             return filteredRow;
         });
 
@@ -730,8 +732,8 @@ router.post('/advancesearch', async (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(response);
     } catch (error) {
-        console.error(error);
         res.setHeader('Access-Control-Allow-Origin', '*');
+        console.error(error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
