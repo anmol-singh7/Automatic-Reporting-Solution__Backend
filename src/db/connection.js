@@ -10,7 +10,7 @@ const USER = process.env.USER_NAME;
 const pool = mysql.createPool({
     host: HOST,
     user: USER,
-    password: "Procta_233.12345678",
+    password: PASSWORD,
     database: DATABASE,
     // port: 3306,
     waitForConnections: true,
