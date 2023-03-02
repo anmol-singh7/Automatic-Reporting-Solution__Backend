@@ -5,7 +5,7 @@ const { getConnection } = require('../db/connection');
 
 router.get('/users', async (req, res) => {
     try {
-        const con1nection = await getConnection();
+        const connection = await getConnection();
         const [rows] = await connection.query('SELECT * FROM Create_Users');
         connection.release();
         res.json(rows);
