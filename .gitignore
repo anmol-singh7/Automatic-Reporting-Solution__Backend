@@ -23,3 +23,5 @@ https://github.com/anmol-singh7/Create_Users.git
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.env

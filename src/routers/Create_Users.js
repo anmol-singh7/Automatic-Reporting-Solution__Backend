@@ -454,53 +454,61 @@ router.post('/sensors/reporttype', async (req, res) => {
 //     }
 // });
 
-router.post('/setpoints', async (req, res) => {
-    try {
-        const connection = await getConnection();
 
-        const sensorData = req.body; // Expect an array of JSON objects in the request body
-        const insertPromises = sensorData.map(async (data) => {
-            // Check if this report ID and sensor name already exist in the Set_Points table
-            const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
-            if (rows.length === 0) {
-                // Insert a new row into the Set_Points table
-                await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
-            }
-        });
 
-        connection.release();
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json({ message: 'New data added successfully' });
-    } catch (error) {
-        console.error(error);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
 
-router.post('/normalpoints', async (req, res) => {
-    try {
-        const connection = await getConnection();
 
-        const sensorData = req.body; // Expect an array of JSON objects in the request body
-        const insertPromises = sensorData.map(async (data) => {
-            // Check if this report ID and sensor name already exist in the Set_Points table
-            const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
-            if (rows.length === 0) {
-                // Insert a new row into the Set_Points table
-                await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
-            }
-        });
 
-        connection.release();
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json({ message: 'New data added successfully' });
-    } catch (error) {
-        console.error(error);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
+
+
+// router.post('/setpoints', async (req, res) => {
+//     try {
+//         const connection = await getConnection();
+
+//         const sensorData = req.body; // Expect an array of JSON objects in the request body
+//         const insertPromises = sensorData.map(async (data) => {
+//             // Check if this report ID and sensor name already exist in the Set_Points table
+//             const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
+//             if (rows.length === 0) {
+//                 // Insert a new row into the Set_Points table
+//                 await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
+//             }
+//         });
+
+//         connection.release();
+//         res.setHeader('Access-Control-Allow-Origin', '*');
+//         res.json({ message: 'New data added successfully' });
+//     } catch (error) {
+//         console.error(error);
+//         res.setHeader('Access-Control-Allow-Origin', '*');
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
+// router.post('/normalpoints', async (req, res) => {
+//     try {
+//         const connection = await getConnection();
+
+//         const sensorData = req.body; // Expect an array of JSON objects in the request body
+//         const insertPromises = sensorData.map(async (data) => {
+//             // Check if this report ID and sensor name already exist in the Set_Points table
+//             const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
+                
+//             if (rows.length === 0) {
+//                 // Insert a new row into the Set_Points table
+//                 await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
+//             }
+//         });
+
+//         connection.release();
+//         res.setHeader('Access-Control-Allow-Origin', '*');
+//         res.json({ message: 'New data added successfully' });
+//     } catch (error) {
+//         console.error(error);
+//         res.setHeader('Access-Control-Allow-Origin', '*');
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
 
 // router.get('/pwd_auto/search', async (req, res) => {
     
@@ -616,6 +624,48 @@ router.post('/normalpoints', async (req, res) => {
 //     }
 // });
 
+router.post('/setpoints', async (req, res) => {
+    const data = req.body;
+    const connection = await getConnection();
+    try {
+        for (let i = 0; i < data.length; i++) {
+            const reportid = data[i].reportid;
+            const sensorname = data[i].sensorname;
+            const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [reportid, sensorname]);
+            if (rows.length === 0) {
+                await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [reportid, sensorname]);
+            }
+        }
+        connection.release();
+        res.json({ message: 'Data inserted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
+router.post('/normalpoints', async (req, res) => {
+    const data = req.body;
+    const connection = await getConnection();
+    try {
+        for (let i = 0; i < data.length; i++) {
+            const reportid = data[i].reportid;
+            const sensorname = data[i].sensorname;
+            const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [reportid, sensorname]);
+            if (rows.length === 0) {
+                await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [reportid, sensorname]);
+            }
+        }
+        connection.release();
+        res.json({ message: 'Data inserted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+
 router.get('/pwd_auto/search', async (req, res) => {
     const datebegin = req.body.datebegin;
     const dateend = req.body.dateend;
@@ -659,17 +709,21 @@ router.get('/pwd_auto/search', async (req, res) => {
 });
 
 router.post('/advancesearch', async (req, res) => {
+    console.log(1)
     res.setHeader('Access-Control-Allow-Origin', '*');
     //sfsdf
     const reportid = req.body.reportid;
+    console.log(reportid)
     const TABLE_TO_USE=req.body.table;
+    console.log(2)
     try {
+        console.log(3)
         res.setHeader('Access-Control-Allow-Origin', '*');
         const connection = await getConnection();
 
         // Get datebegin, dateend, and reporttype from Description table
         const [descriptionRows] = await connection.query(
-            'SELECT datebegin, dateend, reporttype FROM Description WHERE reportid = ?',
+            'SELECT datebegin, dateend, reporttype FROM descriptiontable WHERE reportid = ?',
             [reportid]
         );
         const [{ datebegin, dateend, reporttype }] = descriptionRows;
@@ -679,28 +733,75 @@ router.post('/advancesearch', async (req, res) => {
             'SELECT sensorname FROM Set_Points WHERE reportid = ? ORDER BY sensorname ASC',
             [reportid]
         );
-        const setPointList = setPointRows.map(row => row.sensorname);
-
+        console.log("setPointRows", [setPointRows],typeof(setPointRows))
+        // const setPointList = setPointRows.map(row => row.sensorname);
+        console.log(4)
         const [normalPointRows] = await connection.query(
             'SELECT sensorname FROM Normal_Points WHERE reportid = ? ORDER BY sensorname ASC',
             [reportid]
         );
-        const normalPointList = normalPointRows.map(row => row.sensorname);
+        console.log("normalPointRows", [normalPointRows])
+        // const normalPointList = normalPointRows.map(row => row.sensorname);
 
         // Get SetList and NormalList from Sensor_List table
+        // const [setListRows] = await connection.query(
+        //     `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setPointList.map(() => '?').join(',')})`,
+        //     [reporttype, ...setPointList]
+        // );
+
+        
+
+
+        const setPointList = setPointRows.map(row => row.sensorname);
+        const setPointListValues = setPointList.map(() => '?').join(',');
         const [setListRows] = await connection.query(
-            `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setPointList.map(() => '?').join(',')})`,
+            `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setPointListValues})`,
             [reporttype, ...setPointList]
         );
 
+
+
+
+
+
+
+
+
         const setList = setPointList.map(sensorname => setListRows.find(row => row.sensorname === sensorname));
 
+
+
+
+
+
+
+
+        // const [normalListRows] = await connection.query(
+        //     `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${normalPointList.map(() => '?').join(',')})`,
+        //     [reporttype, ...normalPointList]
+        // );
+
+
+
+        const normalPointList = normalPointRows.map(row => row.sensorname);
+        const normalPointListValues = normalPointList.map(() => '?').join(',');
         const [normalListRows] = await connection.query(
-            `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${normalPointList.map(() => '?').join(',')})`,
+            `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${normalPointListValues})`,
             [reporttype, ...normalPointList]
         );
-        const normalList = normalPointList.map(sensorname => normalListRows.find(row => row.sensorname === sensorname));
 
+
+
+
+
+
+
+
+
+
+
+        const normalList = normalPointList.map(sensorname => normalListRows.find(row => row.sensorname === sensorname));
+        console.log(5)
         // Get attribute types from NormalList
         const attributes = normalList.map(row => row.attributetype);
 
@@ -714,7 +815,7 @@ router.post('/advancesearch', async (req, res) => {
         );
 
 
-
+        console.log(6)
         // Filter rows to include only attributes from Normallist
         const finalArray = tableRows.map(row => {
             const filteredRow = {};
@@ -723,19 +824,24 @@ router.post('/advancesearch', async (req, res) => {
                     filteredRow[key] = row[key];
                 }
             });
+            console.log(7)
             res.setHeader('Access-Control-Allow-Origin', '*');
             return filteredRow;
         });
 
         connection.release();
-
+        console.log(8)
         const response = { firstheader: setList, secondheader: normalList, body: finalArray ,attributelist:columns};
         res.setHeader('Access-Control-Allow-Origin', '*');
+        console.log(9)
         res.json(response);
+        console.log(10)
     } catch (error) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.log(11)
+        res.status(500).json({ message: 'Server Error' ,err:error});
+        console.log(12)
     }
 });
 
@@ -863,3 +969,93 @@ module.exports = router;
 //     }
 // });
 
+// const express = require('express');
+// const cors = require('cors');
+// const mysql = require('mysql2/promise');
+
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+
+// const port = 3000;
+
+// // Create a connection pool to reuse connections
+// const pool = mysql.createPool({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'password',
+//     database: 'mydatabase',
+//     connectionLimit: 10,
+// });
+
+// // Helper function to get a connection from the pool
+// const getConnection = async () => {
+//     try {
+//         const connection = await pool.getConnection();
+//         return connection;
+//     } catch (error) {
+//         console.error(error);
+//         throw new Error('Error getting connection from pool');
+//     }
+// };
+
+// // Endpoint to handle advance search
+// app.post('/advancesearch', async (req, res) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+
+//     // Get report id and table name from request body
+//     const { reportid, table } = req.body;
+
+//     try {
+//         // Get datebegin, dateend, and reporttype from Description table
+//         const connection = await getConnection();
+//         const [descriptionRows] = await connection.query(
+//             'SELECT datebegin, dateend, reporttype FROM descriptiontable WHERE reportid = ?',
+//             [reportid]
+//         );
+//         const [{ datebegin, dateend, reporttype }] = descriptionRows;
+
+//         // Get SetPointList and NormalPointList from Set_Points and Normal_Points tables
+//         const [setPointRows] = await connection.query(
+//             'SELECT sensorname FROM Set_Points WHERE reportid = ? ORDER BY sensorname ASC',
+//             [reportid]
+//         );
+//         const setPointList = setPointRows.map(row => row.sensorname);
+
+//         const [normalPointRows] = await connection.query(
+//             'SELECT sensorname FROM Normal_Points WHERE reportid = ? ORDER BY sensorname ASC',
+//             [reportid]
+//         );
+//         const normalPointList = normalPointRows.map(row => row.sensorname);
+
+//         // Get SetList and NormalList from Sensor_List table
+//         const setListValues = setPointList.map(() => '?').join(',');
+//         const [setListRows] = await connection.query(
+//             `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setListValues})`,
+//             [reporttype, ...setPointList]
+//         );
+//         const setList = setPointList.map(sensorname => setListRows.find(row => row.sensorname === sensorname));
+
+//         const normalListValues = normalPointList.map(() => '?').join(',');
+//         const [normalListRows] = await connection.query(
+//             `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${normalListValues})`,
+//             [reporttype, ...normalPointList]
+//         );
+//         const normalList = normalPointList.map(sensorname => normalListRows.find(row => row.sensorname === sensorname));
+
+//         // Get attribute types from NormalList
+//         const attributes = normalList.map(row => row.attributetype);
+
+//         // Get column names from table
+//         const [rows] = await connection.query(`DESCRIBE ${table}`);
+//         const columns = rows.map(row => row.Field);
+
+//         // Get rows from table where first column value is between datebegin and dateend
+//         const [tableRows] = await connection.query(
+//             `SELECT * FROM ${table} WHERE ${columns[0]} BETWEEN ? AND ? `,
+//             [datebegin, dateend]
+//         );
+
+//         // Filter rows to include only attributes from NormalList
+//         const finalArray = tableRows.map(row => {
+//             const filteredRow =
