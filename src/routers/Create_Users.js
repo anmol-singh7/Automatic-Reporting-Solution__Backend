@@ -727,9 +727,11 @@ router.post('/advancesearch', async (req, res) => {
         connection.release();
 
         const response = { firstheader: setList, secondheader: normalList, body: finalArray ,attributelist:columns};
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(response);
     } catch (error) {
         console.error(error);
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(500).json({ message: 'Server Error' });
     }
 });
