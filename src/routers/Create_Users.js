@@ -660,6 +660,7 @@ router.get('/pwd_auto/search', async (req, res) => {
 
 router.post('/advancesearch', async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    //sfsdf
     const reportid = req.body.reportid;
     const TABLE_TO_USE=req.body.table;
     try {
