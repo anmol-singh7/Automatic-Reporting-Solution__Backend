@@ -526,10 +526,10 @@ router.post('/advancesearch', async (req, res) => {
         connection.release();
         // console.log(8)
         const dat = JSON.stringify(setList);
-        const res = { firstheader: dat };
+        const response1 = { firstheader: dat };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-        res.json(res);
+        res.json(response1);
         // console.log(10)
 
     }
