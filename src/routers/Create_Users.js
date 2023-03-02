@@ -525,11 +525,11 @@ router.post('/advancesearch', async (req, res) => {
         });
         connection.release();
         // console.log(8)
-        const res = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
-        const response=JSON.stringify(res);
+        const dat = JSON.stringify(setList);
+        const res = { firstheader: dat };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-        res.json(response);
+        res.json(res);
         // console.log(10)
 
     }
