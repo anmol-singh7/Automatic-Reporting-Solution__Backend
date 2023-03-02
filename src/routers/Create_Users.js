@@ -430,15 +430,13 @@ router.get('/pwd_auto/search', async (req, res) => {
 });
 
 router.post('/advancesearch', async (req, res) => {
-    console.log(1)
     res.setHeader('Access-Control-Allow-Origin', '*');
     //sfsdf
     const reportid = req.body.reportid;
-    console.log(reportid)
+    // console.log(reportid)
     const TABLE_TO_USE=req.body.table;
-    console.log(2)
     try {
-        console.log(3)
+        // console.log(3)
         res.setHeader('Access-Control-Allow-Origin', '*');
         const connection = await getConnection();
 
@@ -454,14 +452,14 @@ router.post('/advancesearch', async (req, res) => {
             'SELECT sensorname FROM Set_Points WHERE reportid = ? ORDER BY sensorname ASC',
             [reportid]
         );
-        console.log("setPointRows", [setPointRows],typeof(setPointRows))
+        // console.log("setPointRows", [setPointRows],typeof(setPointRows))
         // const setPointList = setPointRows.map(row => row.sensorname);
-        console.log(4)
+        // console.log(4)
         const [normalPointRows] = await connection.query(
             'SELECT sensorname FROM Normal_Points WHERE reportid = ? ORDER BY sensorname ASC',
             [reportid]
         );
-        console.log("normalPointRows", [normalPointRows])
+        // console.log("normalPointRows", [normalPointRows])
         // const normalPointList = normalPointRows.map(row => row.sensorname);
 
         // Get SetList and NormalList from Sensor_List table
@@ -479,67 +477,35 @@ router.post('/advancesearch', async (req, res) => {
             `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setPointListValues})`,
             [reporttype, ...setPointList]
         );
-
-
-
-
-
-
-
-
-
         const setList = setPointList.map(sensorname => setListRows.find(row => row.sensorname === sensorname));
-
-
-
-
         console.log("setlist", setList);
-       
-
-
-
         // const [normalListRows] = await connection.query(
         //     `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${normalPointList.map(() => '?').join(',')})`,
         //     [reporttype, ...normalPointList]
         // );
-
-
-
         const normalPointList = normalPointRows.map(row => row.sensorname);
         const normalPointListValues = normalPointList.map(() => '?').join(',');
         const [normalListRows] = await connection.query(
             `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${normalPointListValues})`,
             [reporttype, ...normalPointList]
         );
-
-
-
-
-
-
-
-
-
-
         
         const normalList = normalPointList.map(sensorname => normalListRows.find(row => row.sensorname === sensorname));
-        console.log(5)
-        console.log("Normallist", normalList)
+        // console.log(5)
+        // console.log("Normallist", normalList)
         // Get attribute types from NormalList
         const attributes = normalList.map(row => row.attributetype);
 
         const [rows] = await connection.query(`DESCRIBE ${TABLE_TO_USE}`);
         connection.release();
         const columns = rows.map(row => row.Field);
-        console.log("columns",columns)
+        // console.log("columns",columns)
         // Get rows from TABLE_TO_USE table where first column value is between datebegin and dateend
         const [tableRows] = await connection.query(
             `SELECT * FROM ${TABLE_TO_USE} WHERE ${columns[0]} BETWEEN ? AND ? `,
             [datebegin, dateend]
         );
-
-
-        console.log(6)
+        // console.log(6)
         // Filter rows to include only attributes from Normallist
         const finalArray = tableRows.map(row => {
             const filteredRow = {};
@@ -548,24 +514,23 @@ router.post('/advancesearch', async (req, res) => {
                     filteredRow[key] = row[key];
                 }
             });
-            console.log(7)
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            // console.log(7)
+            // res.setHeader('Access-Control-Allow-Origin', '*');
             return filteredRow;
         });
-
         connection.release();
-        console.log(8)
+        // console.log(8)
         const response = { firstheader: setList, secondheader: normalList, body: finalArray ,attributelist:columns};
         res.setHeader('Access-Control-Allow-Origin', '*');
-        console.log(9)
+        // console.log(9)
         res.json(response);
-        console.log(10)
+        // console.log(10)
     } catch (error) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         console.error(error);
-        console.log(11)
+        // console.log(11)
         res.status(500).json({ message: 'Server Error' ,err:error});
-        console.log(12)
+        // console.log(12)
     }
 });
 
