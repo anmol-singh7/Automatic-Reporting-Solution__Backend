@@ -267,7 +267,7 @@ router.post('/description', async (req, res) => {
         const codegeneratedVianumberrep = count.toString().padStart(6, '0');
 
         // Generate the report ID
-        const reportid = `${datebegin}${timebegin}${clientid}${userid}${codegeneratedVianumberrep}V_1`;
+        const reportid = "12";
 
         const result = await connection.query(
             'INSERT INTO descriptiontable (userid, clientid, reporttype, systems, manufacturer, datebegin, timebegin, dateend, timeend, status, timetype, reportid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -438,6 +438,11 @@ router.post('/advancesearch', async (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
 
         const reportid = req.body.reportid;
+
+        if(reportid===undefined){
+            connection.release();
+            res.json({ message: 'reportid is undefined' });
+        }
         // console.log(reportid)
         const TABLE_TO_USE = req.body.table;
         // Get datebegin, dateend, and reporttype from Description table
