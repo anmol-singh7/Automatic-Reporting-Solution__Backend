@@ -525,7 +525,8 @@ router.post('/advancesearch', async (req, res) => {
         });
         connection.release();
         // console.log(8)
-        const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
+        const res = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
+        const response=JSON.stringify(res);
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
         res.json(response);
