@@ -71,10 +71,14 @@ router.post('/addusers', async (req, res) => {
 // });
 
 
-router.get('/pwd_auto/columns', async (req, res) => {
+router.post('/pwd_auto/columns', async (req, res) => {
     try {
+        const table=req.body.table;
+        if(table==="" && table===null){
+           res.status(400).json({message:"Invalid table"})
+        }
         const connection = await getConnection();
-        const [rows] = await connection.query('DESCRIBE pwd_auto');
+        const [rows] = await connection.query(`DESCRIBE ${table}`);
         connection.release();
         const columns = rows.map(row => row.Field);
         res.json(columns);
@@ -208,7 +212,6 @@ async function getNumRows(tableName) {
     }
 }
 
-
 router.get('/sensorlist', async (req, res) => {
     try {
         const connection = await getConnection();
@@ -220,72 +223,6 @@ router.get('/sensorlist', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
-// router.post('/description', async (req, res) => {
-//     const {
-//         userid,
-//         clientid,
-//         reporttype,
-//         systems,
-//         manufacturer,
-//         datebegin,
-//         timebegin,
-//         dateend,
-//         timeend,
-//         status,
-//         timetype,
-//         reportid,
-//     } = req.body;
-
-//     try {
-//         const connection = await getConnection();
-//         if (
-//             !userid ||
-//             !clientid ||
-//             !reporttype ||
-//             !systems ||
-//             !manufacturer ||
-//             !datebegin ||
-//             !timebegin ||
-//             !dateend ||
-//             !timeend ||
-//             !status ||
-//             !timetype ||
-//             !reportid
-//         ) {
-//             return res.status(400).json({ message: 'Invalid request' });
-//         }
-
-//         // Get the current number of rows in the table
-//         const [row] = await connection.query('SELECT COUNT(*) AS count FROM descriptiontable');
-
-//         // Generate the Sensor_Name for the new row based on the current number of rows
-//         const sensorName = `S${row[0].count + 1}`;
-
-//         const result = await connection.query(
-//             'INSERT INTO descriptiontable (userid, clientid, reporttype, systems, manufacturer, datebegin, timebegin, dateend, timeend, status, timetype, reportid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-//             [
-//                 userid,
-//                 clientid,
-//                 reporttype,
-//                 systems,
-//                 manufacturer,
-//                 datebegin,
-//                 timebegin,
-//                 dateend,
-//                 timeend,
-//                 status,
-//                 timetype,
-//                 reportid,
-//             ]
-//         );
-//         connection.release();
-//         res.json({ message: 'New row added successfully', sensorName });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
 
 router.post('/description', async (req, res) => {
     const {
@@ -407,222 +344,6 @@ router.post('/sensors/reporttype', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
-
-// router.post('/normalpoints', async (req, res) => {
-//     const data = req.body;
-
-//     try {
-//         const connection = await getConnection();
-
-//         if (!Array.isArray(data)) {
-//             return res.status(400).json({ message: 'Invalid request' });
-//         }
-
-//         const values = data.map((item) => [item.reportid, item.sensorname]);
-
-//         const result = await connection.query(
-//             'INSERT INTO `Normal_Points` (reportid, sensorname) VALUES ?',
-//             [values]
-//         );
-
-//         connection.release();
-//         res.json({ message: 'New rows added successfully' });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-
-
-// router.get('/setpoints', async (req, res) => {
-//     const { reportid } = req.body;
-//     try {
-//         const connection = await getConnection();
-//         const [result] = await connection.query(
-//             'SELECT data FROM Set_Points WHERE reportid = ?',
-//             [reportid]
-//         );
-//         connection.release();
-//         if (!result.length) {
-//             return res.status(404).json({ message: 'No data found for this reportid' });
-//         }
-//         res.json(result[0].data) ;
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-
-
-
-
-
-
-
-
-// router.post('/setpoints', async (req, res) => {
-//     try {
-//         const connection = await getConnection();
-
-//         const sensorData = req.body; // Expect an array of JSON objects in the request body
-//         const insertPromises = sensorData.map(async (data) => {
-//             // Check if this report ID and sensor name already exist in the Set_Points table
-//             const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
-//             if (rows.length === 0) {
-//                 // Insert a new row into the Set_Points table
-//                 await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
-//             }
-//         });
-
-//         connection.release();
-//         res.setHeader('Access-Control-Allow-Origin', '*');
-//         res.json({ message: 'New data added successfully' });
-//     } catch (error) {
-//         console.error(error);
-//         res.setHeader('Access-Control-Allow-Origin', '*');
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-
-// router.post('/normalpoints', async (req, res) => {
-//     try {
-//         const connection = await getConnection();
-
-//         const sensorData = req.body; // Expect an array of JSON objects in the request body
-//         const insertPromises = sensorData.map(async (data) => {
-//             // Check if this report ID and sensor name already exist in the Set_Points table
-//             const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [data.reportid, data.sensorname]);
-                
-//             if (rows.length === 0) {
-//                 // Insert a new row into the Set_Points table
-//                 await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [data.reportid, data.sensorname]);
-//             }
-//         });
-
-//         connection.release();
-//         res.setHeader('Access-Control-Allow-Origin', '*');
-//         res.json({ message: 'New data added successfully' });
-//     } catch (error) {
-//         console.error(error);
-//         res.setHeader('Access-Control-Allow-Origin', '*');
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-
-// router.get('/pwd_auto/search', async (req, res) => {
-    
-//         const datebegin= "2023-01-06 10:27:11.000000";
-//         const dateend   ="2023-01-06 10:40:11.000000";
-//         const reporttype="Aut"
-
-
-//     try {
-//         const connection = await getConnection();
-//         const [rows] = await connection.query(
-//             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? ORDER BY CurDT ASC',
-//             [datebegin, dateend]
-//         );
-//         connection.release();
-
-//         res.json(rows);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-
-
-// router.get('/pwd_auto/search', async (req, res) => {
-//     const datebegin = "2023-01-06 10:27:11.000000";
-//     const dateend = "2023-01-06 10:40:11.000000";
-//     const reporttype = "Aut";
-
-//     try {
-//         const connection = await getConnection();
-//         // Get list of sensors matching reporttype from Sensor_List table
-//         const [sensorListRows] = await connection.query(
-//             'SELECT sensorname, attributetype FROM Sensor_List WHERE reporttype = ?',
-//             [reporttype]
-//         );
-//         const sensorList = sensorListRows.map(row => row.attributetype);
-//         connection.release();
-
-//         // Get data from pwd_auto table for selected sensors and time range
-//         const [pwdAutoRows] = await connection.query(
-//             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? AND sensorname IN (?) ORDER BY CurDT ASC',
-//             [datebegin, dateend, sensorList]
-//         );
-//         connection.release();
-
-//         // Remove unwanted fields from rows
-//         const rows = pwdAutoRows.map(row => {
-//             const filteredRow = {};
-//             sensorList.forEach(sensor => {
-//                 filteredRow[sensor] = row[sensor];
-//             });
-//             return filteredRow;
-//         });
-
-//         // Add attributetype to each sensor in response
-//         const sensorsWithAttributes = sensorListRows.map(row => ({
-//             sensorname: row.sensorname,
-//             attributetype: row.attributetype
-//         }));
-
-//         // Combine filtered rows and sensor attributes into response object
-//         const response = {
-//             sensors: sensorsWithAttributes,
-//             data: rows
-//         };
-
-//         res.json(response);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-
-// router.get('/pwd_auto/search', async (req, res) => {
-//     const datebegin = "2023-01-06 10:27:11.000000";
-//     const dateend = "2023-01-06 10:40:11.000000";
-//     const reporttype = "Aut"
-
-//     try {
-//         const connection = await getConnection();
-
-//         // Get attribute types from Sensor_List table where reporttype=Aut
-//         const [sensorListRows] = await connection.query(
-//             'SELECT attributetype FROM Sensor_List WHERE reporttype = ?',
-//             [reporttype]
-//         );
-//         const attributeTypes = sensorListRows.map(row => row.attributetype);
-
-//         // Get rows from pwd_auto table where CurDT is between datebegin and dateend
-//         const [pwdAutoRows] = await connection.query(
-//             'SELECT * FROM pwd_auto WHERE CurDT BETWEEN ? AND ? ORDER BY CurDT ASC',
-//             [datebegin, dateend]
-//         );
-
-//         // Remove any keys from each row that are not in the attributeTypes list
-//         const filteredRows = pwdAutoRows.map(row => {
-//             const filteredRow = {};
-//             Object.keys(row).forEach(key => {
-//                 if (attributeTypes.includes(key)) {
-//                     filteredRow[key] = row[key];
-//                 }
-//             });
-//             return filteredRow;
-//         });
-
-//         connection.release();
-
-//         res.json(filteredRows);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }
-// });
 
 router.post('/setpoints', async (req, res) => {
     const data = req.body;
@@ -772,7 +493,8 @@ router.post('/advancesearch', async (req, res) => {
 
 
 
-
+        console.log("setlist", setList);
+       
 
 
 
@@ -799,17 +521,19 @@ router.post('/advancesearch', async (req, res) => {
 
 
 
-
+        
         const normalList = normalPointList.map(sensorname => normalListRows.find(row => row.sensorname === sensorname));
         console.log(5)
+        console.log("Normallist", normalList)
         // Get attribute types from NormalList
         const attributes = normalList.map(row => row.attributetype);
 
-        const [rows] = await connection.query('DESCRIBE pwd_auto');
+        const [rows] = await connection.query(`DESCRIBE ${TABLE_TO_USE}`);
         connection.release();
         const columns = rows.map(row => row.Field);
+        console.log("columns",columns)
         // Get rows from TABLE_TO_USE table where first column value is between datebegin and dateend
-        const [tempRows] = await connection.query(
+        const [tableRows] = await connection.query(
             `SELECT * FROM ${TABLE_TO_USE} WHERE ${columns[0]} BETWEEN ? AND ? `,
             [datebegin, dateend]
         );
@@ -848,10 +572,8 @@ router.post('/advancesearch', async (req, res) => {
 // router.get('/pwd_auto/search', async (req, res) => {
 //     const reportid = req.body.reportid;
 //     const TABLE_TO_USE = req.body.table;
-
 //     try {
 //         const connection = await getConnection();
-
 //     // Get datebegin, dateend, and reporttype from Description table based on reportid
 //         const [descriptionRows] = await connection.query(
 //             'SELECT datebegin, dateend, reporttype FROM Description WHERE reportid = ?',
