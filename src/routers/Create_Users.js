@@ -70,7 +70,7 @@ router.post('/addusers', async (req, res) => {
 //     }
 // });
 
-router.get("/attibutetable",async (req,res)=>{
+router.get("/tables",async (req,res)=>{
     const tablelist=["pwd_auto","pwd_sanit","table_1"];
     res.json(tablelist);
 });
@@ -92,9 +92,12 @@ router.get("/attibutetable",async (req,res)=>{
 //     }
 // });
 
-router.post('/tablename', async (req, res) => {
+router.post('/attributelist', async (req, res) => {
     try {
         const table = req.body.table;
+        if(table==="-"){
+            res.json([]);
+        }
         if (!table) {
             res.status(400).json({ message: "Invalid table" });
         }
@@ -284,18 +287,12 @@ router.post('/description', async (req, res) => {
         }
 
         // Generate the codegeneratedVianumberrep
-        const [countResult] = await connection.query(
-            'SELECT COUNT(*) AS count FROM descriptiontable WHERE datebegin = ?',
-            [datebegin]
-        );
-        const count = countResult[0].count + 1;
-        const codegeneratedVianumberrep = count.toString().padStart(6, '0');
-
-
-
-
-
-
+        // const [countResult] = await connection.query(
+        //     'SELECT COUNT(*) AS count FROM descriptiontable WHERE datebegin = ?',
+        //     [datebegin]
+        // );
+        // const count = countResult[0].count + 1;
+        // const codegeneratedVianumberrep = count.toString().padStart(6, '0');
         // Get current date
         const date = new Date();
         // Extract year, month, and day from the date
@@ -398,7 +395,7 @@ router.post('/setpoints', async (req, res) => {
             const sensorname = data[i].sensorname;
             const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [reportid, sensorname]);
             if (rows.length === 0) {
-                await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [reportid, sensorname]);
+                await connection.query('INSERT INTO Set_Points (reportid, sensorname,orderofsensor) VALUES (?, ?)', [reportid, sensorname,-1]);
             }
         }
         connection.release();
@@ -419,7 +416,7 @@ router.post('/normalpoints', async (req, res) => {
             const sensorname = data[i].sensorname;
             const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [reportid, sensorname]);
             if (rows.length === 0) {
-                await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [reportid, sensorname]);
+                await connection.query('INSERT INTO Normal_Points (reportid, sensorname,orderofsensor) VALUES (?, ?)', [reportid, sensorname,-1]);
             }
         }
         connection.release();
@@ -590,12 +587,8 @@ router.post('/advancesearch', async (req, res) => {
 //     res.setHeader('Access-Control-Allow-Origin', '*');
 //     //sfsdf
 //         const connection = await getConnection();
-
-
-
-
 //     try {
-//         // console.log(3)
+//         // console.log(3)o
 //         res.setHeader('Access-Control-Allow-Origin', '*');
 
 //     const reportid = req.body.reportid;
