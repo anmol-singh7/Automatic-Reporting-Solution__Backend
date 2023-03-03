@@ -429,23 +429,20 @@ router.get('/pwd_auto/search', async (req, res) => {
     }
 });
 
-router.post
+        router.get('/advancesearch', async (req, res) => {
+            const data = req.body;
+            const connection = await getConnection();
+            try {
+                res.setHeader('Access-Control-Allow-Origin', '*');
 
-router.get('/advancesearch/:reportid/:table', async (req, res) => {
-    const data = req.body;
-    const connection = await getConnection();
-    try {
-        // console.log(3)
-        res.setHeader('Access-Control-Allow-Origin', '*');
+                const reportid = req.query.reportid;
 
-        const reportid = req.params.reportid;
+                if (reportid === undefined) {
+                    connection.release();
+                    res.json({ message: 'reportid is undefined' });
+                }
 
-        if(reportid===undefined){
-            connection.release();
-            res.json({ message: 'reportid is undefined' });
-        }
-        // console.log(reportid)
-        const TABLE_TO_USE = req.params.table;
+                const TABLE_TO_USE = req.query.table;
         // Get datebegin, dateend, and reporttype from Description table
         const [descriptionRows] = await connection.query(
             'SELECT datebegin, dateend, reporttype FROM descriptiontable WHERE reportid = ?',
@@ -475,10 +472,6 @@ router.get('/advancesearch/:reportid/:table', async (req, res) => {
         //     `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setPointList.map(() => '?').join(',')})`,
         //     [reporttype, ...setPointList]
         // );
-
-
-
-
         const setPointList = setPointRows.map(row => row.sensorname);
         const setPointListValues = setPointList.map(() => '?').join(',');
         const [setListRows] = await connection.query(
