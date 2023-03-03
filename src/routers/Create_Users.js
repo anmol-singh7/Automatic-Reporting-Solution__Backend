@@ -70,13 +70,35 @@ router.post('/addusers', async (req, res) => {
 //     }
 // });
 
+router.get("/attibutetable",async (req,res)=>{
+    const tablelist=["pwd_auto","pwd_sanit","table_1"];
+    res.json(tablelist);
+});
 
-router.post('/pwd_auto/columns', async (req, res) => {
+// router.post('/pwd_auto/columns', async (req, res) => {
+//     try {
+//         const table=req.body.table;
+//         if(table==="" && table===null){
+//            res.status(400).json({message:"Invalid table"})
+//         }
+//         const connection = await getConnection();
+//         const [rows] = await connection.query(`DESCRIBE ${table}`);
+//         connection.release();
+//         const columns = rows.map(row => row.Field);
+//         res.json(columns);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }
+// });
+
+router.post('/tablename', async (req, res) => {
     try {
-        const table=req.body.table;
-        if(table==="" && table===null){
-           res.status(400).json({message:"Invalid table"})
+        const table = req.body.table;
+        if (!table) {
+            res.status(400).json({ message: "Invalid table" });
         }
+        console.log(table)
         const connection = await getConnection();
         const [rows] = await connection.query(`DESCRIBE ${table}`);
         connection.release();
@@ -87,6 +109,9 @@ router.post('/pwd_auto/columns', async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
+
+
 
 router.post('/add_audit_report_prototype', async (req, res) => {
     const { Head1, Head2, Unit, AttributeType } = req.body;
@@ -266,8 +291,27 @@ router.post('/description', async (req, res) => {
         const count = countResult[0].count + 1;
         const codegeneratedVianumberrep = count.toString().padStart(6, '0');
 
+
+
+
+
+
+        // Get current date
+        const date = new Date();
+        // Extract year, month, and day from the date
+        const year = date.getFullYear().toString().substr(-2);
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        // Generate a 4-digit random number
+        const randomNumber = Math.floor(1000 + Math.random() * 9000);
+        // Concatenate date and random number to form the ID
+        const id = year + month + day + randomNumber.toString();
+
+        const idstring=id.toString();
+         
+        const reportid=idstring+"V_1";
         // Generate the report ID
-        const reportid = "12";
+        // const reportid = id;
 
         const result = await connection.query(
             'INSERT INTO descriptiontable (userid, clientid, reporttype, systems, manufacturer, datebegin, timebegin, dateend, timeend, status, timetype, reportid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
