@@ -429,34 +429,34 @@ router.get('/pwd_auto/search', async (req, res) => {
     }
 });
 
-        router.get('/advancesearch', async (req, res) => {
-            // const data = req.body;
-            const connection = await getConnection();
-            try {
-                res.setHeader('Access-Control-Allow-Origin', '*');
 
-                const reportid = req.query.reportid;
+router.post('/advancesearch', async (req, res) => {
+    const data = req.body;
+    const connection = await getConnection();
+    try {
+        // console.log(3)
+        res.setHeader('Access-Control-Allow-Origin', '*');
 
-                if (reportid === undefined) {
-                    connection.release();
-                    res.json({ message: 'reportid is undefined' });
-                }
+        const reportid = req.body.reportid;
 
-                const TABLE_TO_USE = req.query.table;
+        if(reportid===undefined){
+            connection.release();
+            res.json({ message: 'reportid is undefinedg' });
+        }
+        // console.log(reportid)
+        const TABLE_TO_USE = req.body.table;
         // Get datebegin, dateend, and reporttype from Description table
         const [descriptionRows] = await connection.query(
             'SELECT datebegin, dateend, reporttype FROM descriptiontable WHERE reportid = ?',
             [reportid]
         );
         const [{ datebegin, dateend, reporttype }] = descriptionRows;
-     
+
         // Get SetPointList and NormalPointList from Set_Points and Normal_Points tables
         const [setPointRows] = await connection.query(
             'SELECT sensorname FROM Set_Points WHERE reportid = ? ORDER BY sensorname ASC',
             [reportid]
-            
         );
-        console.log(datebegin)
         // console.log("setPointRows", [setPointRows],typeof(setPointRows))
         // const setPointList = setPointRows.map(row => row.sensorname);
         // console.log(4)
@@ -472,6 +472,10 @@ router.get('/pwd_auto/search', async (req, res) => {
         //     `SELECT * FROM Sensor_List WHERE reporttype = ? AND sensorname IN (${setPointList.map(() => '?').join(',')})`,
         //     [reporttype, ...setPointList]
         // );
+
+
+
+
         const setPointList = setPointRows.map(row => row.sensorname);
         const setPointListValues = setPointList.map(() => '?').join(',');
         const [setListRows] = await connection.query(
@@ -524,7 +528,7 @@ router.get('/pwd_auto/search', async (req, res) => {
         const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-                res.json({ message: 'successful  response' });
+        res.json(response);
         // console.log(10)
 
     }
