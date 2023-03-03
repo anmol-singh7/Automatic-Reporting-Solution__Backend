@@ -430,7 +430,7 @@ router.get('/pwd_auto/search', async (req, res) => {
 });
 
         router.get('/advancesearch', async (req, res) => {
-            const data = req.body;
+            // const data = req.body;
             const connection = await getConnection();
             try {
                 res.setHeader('Access-Control-Allow-Origin', '*');
@@ -524,7 +524,7 @@ router.get('/pwd_auto/search', async (req, res) => {
         const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-                res.json({ message: 'successfully  response' });
+                res.json({ message: 'successful  response' });
         // console.log(10)
 
     }
