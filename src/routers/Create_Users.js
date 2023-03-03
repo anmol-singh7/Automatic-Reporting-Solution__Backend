@@ -5,7 +5,7 @@ const { getConnection } = require('../db/connection');
 
 router.get('/users', async (req, res) => {
     try {
-        const connection = await getConnection();
+        const con1nection = await getConnection();
         const [rows] = await connection.query('SELECT * FROM Create_Users');
         connection.release();
         res.json(rows);
@@ -525,11 +525,10 @@ router.post('/advancesearch', async (req, res) => {
         });
         connection.release();
         // console.log(8)
-        const dat = JSON.stringify(setList);
-        const response1 = { firstheader: dat };
+        const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-        res.json(response1);
+        res.json(response);
         // console.log(10)
 
     }
