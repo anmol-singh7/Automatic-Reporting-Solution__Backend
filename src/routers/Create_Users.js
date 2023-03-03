@@ -528,7 +528,7 @@ router.post('/advancesearch', async (req, res) => {
         const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-        res.json(response);
+        res.json(setList);
         // console.log(10)
 
     }
