@@ -524,7 +524,7 @@ router.get('/pwd_auto/search', async (req, res) => {
         const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
-        res.json(response);
+                res.json({ message: 'successfully  response' });
         // console.log(10)
 
     }
