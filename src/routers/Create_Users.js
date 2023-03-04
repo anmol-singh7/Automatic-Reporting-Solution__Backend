@@ -561,18 +561,18 @@ router.post('/advancesearch', async (req, res) => {
         );
 
 
-        const array1 = columns;
-        const array2 = tableRows[0];
-        console.log(tableRows[0]);
-        const result = [];
+        // const array1 = columns;
+        // const array2 = tableRows[0];
+        // console.log(tableRows[0]);
+        // const result = [];
 
-        for (let i = 0; i < array1.length; i++) {
-            const obj = {};
-            obj[array1[i]] = array2[i];
-            result.push(obj);
-        }
+        // for (let i = 0; i < array1.length; i++) {
+        //     const obj = {};
+        //     obj[array1[i]] = array2[i];
+        //     result.push(obj);
+        // }
 
-        console.log(result);
+        // console.log(result);
 // Output: [{"a":"x"}, {"b":2}, {"c":"y"}]
 
         // console.log(6)
@@ -590,7 +590,7 @@ router.post('/advancesearch', async (req, res) => {
         });
         connection.release();
         // console.log(8)
-        const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: result };
+        const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: tableRows[0] };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
         res.json(response);
