@@ -605,6 +605,24 @@ router.post('/advancesearch', async (req, res) => {
     }
 });
 
+router.post('/addversions', async (req, res) => {
+    const { userid, clientid, reporttype, systems, datebegin, timebegin, dateend, timeend, status, reportid, body, setdata, comments, previoushandler, nexthandler, count } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+        if (!userid || !clientid || !reporttype || !systems || !datebegin || !timebegin || !dateend || !timeend || !status || !reportid || !body || !setdata || !comments || !previoushandler || !nexthandler || !count) {
+            return res.status(400).json({ message: 'Invalid request' });
+        }
+        const query = 'INSERT INTO versions (userid, clientid, reporttype, systems, datebegin, timebegin, dateend, timeend, status, reportid, body, setdata, comments, previoushandler, nexthandler, count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const result = await connection.query(query, [userid, clientid, reporttype, systems, datebegin, timebegin, dateend, timeend, status, reportid, body, setdata, comments, previoushandler, nexthandler, count]);
+        connection.release();
+        res.json({ message: 'Version added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+})
+
 
 
 // router.post('/advancesearch', async (req, res) => {
@@ -722,7 +740,47 @@ router.post('/advancesearch', async (req, res) => {
 
 
 
+router.post('/addsetvalues', async (req, res) => {
+    const { setreportid, arraydata } = req.body;
 
+    try {
+        const connection = await getConnection();
+        if (!setreportid || !arraydata) {
+            return res.status(400).json({ message: 'Invalid request' });
+        }
+        const result = await connection.query(
+            'INSERT INTO SETTABLE (setreportid, arraydata) VALUES (?, ?)',
+            [setreportid, arraydata]
+        );
+        connection.release();
+        res.json({ message: 'Values added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+router.post('/getarraydata', async (req, res) => {
+    const setreportid = req.body.setreportid;
+
+    try {
+        const connection = await getConnection();
+        const result = await connection.query(
+            'SELECT * FROM settable WHERE setreportid = ?',
+            [setreportid]
+        );
+        connection.release();
+        if (result.length > 0) {
+            res.json(result[0]);
+        } else {
+            const result =""
+            res.json(result);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 
 
