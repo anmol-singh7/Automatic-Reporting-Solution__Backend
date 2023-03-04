@@ -749,7 +749,7 @@ router.post('/addsetvalues', async (req, res) => {
             return res.status(400).json({ message: 'Invalid request' });
         }
         const result = await connection.query(
-            'INSERT INTO SETTABLE (setreportid, arraydata) VALUES (?, ?)',
+            'INSERT INTO settable (setreportid, arraydata) VALUES (?, ?)',
             [setreportid, arraydata]
         );
         connection.release();
