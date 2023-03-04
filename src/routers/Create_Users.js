@@ -403,7 +403,7 @@ router.post('/setpoints', async (req, res) => {
             const sensorname = data[i].sensorname;
             const [rows] = await connection.query('SELECT * FROM Set_Points WHERE reportid = ? AND sensorname = ?', [reportid, sensorname]);
             if (rows.length === 0) {
-                await connection.query('INSERT INTO Set_Points (reportid, sensorname,orderofsensor) VALUES (?, ?,?)', [reportid, sensorname,-1]);
+                await connection.query('INSERT INTO Set_Points (reportid, sensorname) VALUES (?, ?)', [reportid, sensorname]);
             }
         }
         connection.release();
@@ -424,7 +424,7 @@ router.post('/normalpoints', async (req, res) => {
             const sensorname = data[i].sensorname;
             const [rows] = await connection.query('SELECT * FROM Normal_Points WHERE reportid = ? AND sensorname = ?', [reportid, sensorname]);
             if (rows.length === 0) {
-                await connection.query('INSERT INTO Normal_Points (reportid, sensorname,orderofsensor) VALUES (?, ?,?)', [reportid, sensorname,-1]);
+                await connection.query('INSERT INTO Normal_Points (reportid, sensorname) VALUES (?, ?)', [reportid, sensorname]);
             }
         }
         connection.release();
