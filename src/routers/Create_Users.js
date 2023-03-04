@@ -559,6 +559,22 @@ router.post('/advancesearch', async (req, res) => {
             `SELECT * FROM ${TABLE_TO_USE} WHERE ${columns[0]} BETWEEN ? AND ? `,
             [datebegin, dateend]
         );
+
+
+        const array1 = columns;
+        const array2 = tableRows[0];
+        console.log()
+        const result = [tableRows[0]];
+
+        for (let i = 0; i < array1.length; i++) {
+            const obj = {};
+            obj[array1[i]] = array2[i];
+            result.push(obj);
+        }
+
+        console.log(result);
+// Output: [{"a":"x"}, {"b":2}, {"c":"y"}]
+
         // console.log(6)
         // Filter rows to include only attributes from Normallist
         const finalArray = tableRows.map(row => {
@@ -574,7 +590,7 @@ router.post('/advancesearch', async (req, res) => {
         });
         connection.release();
         // console.log(8)
-        const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: columns };
+        const response = { firstheader: setList, secondheader: normalList, body: finalArray, attributelist: result };
         res.setHeader('Access-Control-Allow-Origin', '*');
         // console.log(9)
         res.json(response);

@@ -9,9 +9,9 @@ const USER = process.env.USER_NAME;
 
 const pool = mysql.createPool({
     host: HOST,
-    user: "admin",
+    user: USER,
     password: PASSWORD,
-    database: "Logastic_Analysis",
+    database: DATABASE,
     // port: 3306,
     waitForConnections: true,
     connectionLimit: 10,
