@@ -291,7 +291,8 @@ router.post('/description', async (req, res) => {
         const count = countResult[0].count + 1;
         const codegeneratedVianumberrep = count.toString().padStart(6, '0');
         // Generate the report ID
-        const reportid = `${datebegin}${timebegin}${clientid}${userid}${codegeneratedVianumberrep}V_1`;
+        const newdate=datebegin.slice(0,-16);
+        const reportid = `${newdate}${codegeneratedVianumberrep}V_1`;
 
         // Generate the codegeneratedVianumberrep
         // const [countResult] = await connection.query(
