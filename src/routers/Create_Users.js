@@ -114,8 +114,6 @@ router.post('/attributelist', async (req, res) => {
 });
 
 
-
-
 router.post('/add_audit_report_prototype', async (req, res) => {
     const { Head1, Head2, Unit, AttributeType } = req.body;
     console.log(req.body)
@@ -285,6 +283,15 @@ router.post('/description', async (req, res) => {
             res.setHeader('Access-Control-Allow-Origin', '*');
             return res.status(400).json({ message: 'Invalid request' });
         }
+        // Generate the codegeneratedVianumberrep
+        const [countResult] = await connection.query(
+            'SELECT COUNT(*) AS count FROM descriptiontable WHERE datebegin = ?',
+            [datebegin]
+        );
+        const count = countResult[0].count + 1;
+        const codegeneratedVianumberrep = count.toString().padStart(6, '0');
+        // Generate the report ID
+        const reportid = `${datebegin}${timebegin}${clientid}${userid}${codegeneratedVianumberrep}V_1`;
 
         // Generate the codegeneratedVianumberrep
         // const [countResult] = await connection.query(
@@ -294,19 +301,19 @@ router.post('/description', async (req, res) => {
         // const count = countResult[0].count + 1;
         // const codegeneratedVianumberrep = count.toString().padStart(6, '0');
         // Get current date
-        const date = new Date();
-        // Extract year, month, and day from the date
-        const year = date.getFullYear().toString().substr(-2);
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-        // Generate a 4-digit random number
-        const randomNumber = Math.floor(1000 + Math.random() * 9000);
-        // Concatenate date and random number to form the ID
-        const id = year + month + day + randomNumber.toString();
+        // const date = new Date();
+        // // Extract year, month, and day from the date
+        // const year = date.getFullYear().toString().substr(-2);
+        // const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        // const day = ('0' + date.getDate()).slice(-2);
+        // // Generate a 4-digit random number
+        // const randomNumber = Math.floor(1000 + Math.random() * 9000);
+        // // Concatenate date and random number to form the ID
+        // const id = year + month + day + randomNumber.toString();
 
-        const idstring=id.toString();
+        // const idstring=id.toString();
          
-        const reportid=idstring+"V_1";
+        // const reportid=idstring+"V_1";
         // Generate the report ID
         // const reportid = id;
 
