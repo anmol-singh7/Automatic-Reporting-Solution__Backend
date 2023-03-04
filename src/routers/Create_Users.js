@@ -564,7 +564,7 @@ router.post('/advancesearch', async (req, res) => {
         const finalArray = tableRows.map(row => {
             const filteredRow = {};
             Object.keys(row).forEach(key => {
-                if (key === `${columns[0]}` || key === `${columns[1]}` || attributes.includes(key)) {
+                if (key === `${columns[0]}` || attributes.includes(key)) {
                     filteredRow[key] = row[key];
                 }
             });
