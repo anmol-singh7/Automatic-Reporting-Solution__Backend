@@ -563,8 +563,8 @@ router.post('/advancesearch', async (req, res) => {
 
         const array1 = columns;
         const array2 = tableRows[0];
-        console.log()
-        const result = [tableRows[0]];
+        console.log(tableRows[0]);
+        const result = [];
 
         for (let i = 0; i < array1.length; i++) {
             const obj = {};
